@@ -23,21 +23,22 @@ class FlutterTestApp extends StatelessWidget {
           labelSmall: TextStyle(color: Colors.white.withOpacity(0.6), fontWeight: FontWeight.w500, fontSize: 14),
         ),
       ),
-      home: const MyHomePage(title: 'Flutter Test'),
+      routes: {
+        '/': (context) => FlutterTest(),
+        '/coin': (context) => FlutterTest2(),
+      },
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  final String title;
+class FlutterTest extends StatefulWidget {
+  const FlutterTest({super.key,});
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<FlutterTest> createState() => _FlutterTestState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _FlutterTestState extends State<FlutterTest> {
 
 
   @override
@@ -45,18 +46,51 @@ class _MyHomePageState extends State<MyHomePage> {
     final theme = Theme.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title),
+        title: const Text('FlutterTest'),
       ),
       body: ListView.separated(
         itemCount: 10,
         separatorBuilder: (context, index) => const Divider(),
-        itemBuilder: (context, i) => ListTile(
+        itemBuilder: (context, i) {
+          const coinName = 'Bitcoin';
+          return ListTile(
           leading: SvgPicture.asset('assets/svg/bitcoinLogo.svg', height: 30, width: 30,),
-          title: Text('Bitcoin', style: theme.textTheme.bodyMedium),
+          title: Text(coinName, style: theme.textTheme.bodyMedium),
           subtitle: Text('200000\$', style: theme.textTheme.labelSmall),
           trailing: const Icon(Icons.arrow_forward_ios),
-        ), 
+          onTap: () {
+            Navigator.of(context).pushNamed('/coin', arguments: coinName,);
+            },
+          );
+        }, 
       ),
+    );
+  }
+}
+
+class FlutterTest2 extends StatefulWidget {
+  const FlutterTest2({super.key});
+
+  @override
+  State<FlutterTest2> createState() => _FlutterTest2State();
+}
+
+class _FlutterTest2State extends State<FlutterTest2> {
+  String? coinName;
+  
+  @override
+  void didChangeDependencies() {
+    final args = ModalRoute.of(context)?.settings.arguments;
+    assert(args != null && args is String, 'Provide String args');
+    coinName = args as String;
+    setState(() {});
+    super.didChangeDependencies();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text(coinName ?? '...')),
     );
   }
 }
